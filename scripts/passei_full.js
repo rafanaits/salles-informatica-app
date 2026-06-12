@@ -11,7 +11,7 @@
   console.log('%c⏳ Lendo questões, buscando respostas e marcando...', 'color: #ffaa00; font-size: 13px;');
 
   // ===== CONFIG =====
-  const GROQ_KEY = 'SUA_GROQ_KEY';
+  const GROQ_KEY = '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';
   const DELAY_ENTRE_CLIQUES = 1500; // ms entre cada clique
   const MARCAR_AUTOMATICO = true;
   const FINALIZAR_AUTOMATICO = true; // clica em finalizar no final

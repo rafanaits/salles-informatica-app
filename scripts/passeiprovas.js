@@ -11,7 +11,9 @@
   console.log('%c🔒 Dupla verificação ativada. Só finaliza com certeza total.', 'color: #ffaa00; font-size: 13px;');
 
   // ===== CONFIG =====
-  const DEEPSEEK_KEY = 'SUA_DEEPSEEK_KEY';
+  const DEEPSEEK_KEY = localStorage.getItem('passei_deepseek_key') || prompt('Cole sua DeepSeek API Key:');
+  if (!DEEPSEEK_KEY) { console.log('%c❌ Key não informada!', 'color: #ff4444;'); return; }
+  localStorage.setItem('passei_deepseek_key', DEEPSEEK_KEY);
   const DELAY_ENTRE_CLIQUES = 2000;
   const MARCAR_AUTOMATICO = true;
   const FINALIZAR_AUTOMATICO = false; // NÃO finaliza - você confere e finaliza manualmente
