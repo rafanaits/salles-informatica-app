@@ -24,7 +24,22 @@ if(!qs.length){console.log('%c❌ Nenhuma questão!','color:#ff4444');return;}
 console.log(`%c📝 ${qs.length} questões encontradas`,'color:#00ff88');
 
 // 2. MONTAR PROMPT
-let prompt=`Você é um professor especialista em tecnologia e programação. Responda TODAS as ${qs.length} questões com a alternativa CORRETA. Cuidado com pegadinhas. APENAS JSON puro:\n{"respostas":[{"questao":1,"letra":"A"},{"questao":2,"letra":"B"}]}\n\n`;
+let prompt=`Você é um professor universitário com 20 anos de experiência em provas de tecnologia, banco de dados, programação e redes. Analise cada questão com EXTREMO CUIDADO.
+
+REGRAS CRÍTICAS:
+1. Leia TODAS as alternativas antes de escolher
+2. Cuidado com alternativas que parecem corretas mas têm um detalhe errado
+3. "Keyspace" em Cassandra equivale a "Database" ou "Schema" - NÃO confunda
+4. "Row" = Linha, "Column" = Coluna - tradução direta
+5. Quando pedir "correspondência correta", verifique CADA par individualmente
+6. Desconfie de alternativas com palavras como "apenas", "somente", "sempre", "nunca"
+7. Prefira a alternativa MAIS PRECISA e TECNICAMENTE CORRETA
+8. Em questões de equivalência/correspondência, a resposta é sempre a que tem TODOS os pares corretos
+
+Responda TODAS as ${qs.length} questões. APENAS JSON puro:
+{"respostas":[{"questao":1,"letra":"A"},{"questao":2,"letra":"B"}]}
+
+`;
 qs.forEach(q=>{prompt+=`Q${q.n}: ${q.e}\n`;q.alts.forEach(a=>{prompt+=`${a.l}) ${a.t}\n`;});prompt+='\n';});
 
 // 3. CHAMAR APIs
