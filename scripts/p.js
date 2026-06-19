@@ -1,10 +1,9 @@
-// PASSEI PROVAS - Multi-API (DeepSeek + Groq) com dupla verificação
+// PASSEI PROVAS - DeepSeek dupla verificação (sem Groq)
 (async function(){
 const DK=atob('c2stOGQ2ZDMwY2I4ZjUxNGI1Yjg2YTQyMDZkZmRmOGQ2MTE=');
-const GK=atob('Z3NrXzlkazQyZVZna01NeDhwQWhLUDVOV0dkeWIzRllqUzQ5YldCU29RV0Jza1VOYmhpMjgxQ08=');
 console.clear();
-console.log('%c🎓 PASSEI PROVAS - Multi-API','color:#00ff88;font-size:18px;font-weight:bold');
-console.log('%c🔒 DeepSeek + Groq | Dupla verificação','color:#ffaa00;font-size:13px');
+console.log('%c🎓 PASSEI PROVAS','color:#00ff88;font-size:18px;font-weight:bold');
+console.log('%c🔒 DeepSeek | Dupla verificação','color:#ffaa00;font-size:13px');
 
 // 1. EXTRAIR QUESTÕES
 const qs=[];
@@ -23,100 +22,90 @@ if(alts.length>0)qs.push({n:qs.length+1,e,alts});
 if(!qs.length){console.log('%c❌ Nenhuma questão!','color:#ff4444');return;}
 console.log(`%c📝 ${qs.length} questões encontradas`,'color:#00ff88');
 
-// 2. MONTAR PROMPT
-let prompt=`Você é um professor universitário com 20 anos de experiência em provas de tecnologia, banco de dados, programação e redes. Analise cada questão com EXTREMO CUIDADO.
+// 2. CHAMAR DEEPSEEK
+async function ask(prompt,temp){
+const r=await fetch('https://api.deepseek.com/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+DK},body:JSON.stringify({model:'deepseek-chat',messages:[{role:'user',content:prompt}],temperature:temp,max_tokens:1000})});
+if(!r.ok){const e=await r.text();throw new Error('API erro '+r.status+': '+e.substring(0,100));}
+const d=await r.json();const t=d.choices[0].message.content.trim();const m=t.match(/\{[\s\S]*\}/);
+return m?JSON.parse(m[0]):null;
+}
 
-REGRAS CRÍTICAS:
+// 3. RODADA 1
+let p1=`Você é um professor universitário com 20 anos de experiência em provas de tecnologia, banco de dados, programação e redes. Analise cada questão com EXTREMO CUIDADO.
+
+REGRAS:
 1. Leia TODAS as alternativas antes de escolher
 2. Cuidado com alternativas que parecem corretas mas têm um detalhe errado
-3. "Keyspace" em Cassandra equivale a "Database" ou "Schema" - NÃO confunda
-4. "Row" = Linha, "Column" = Coluna - tradução direta
-5. Quando pedir "correspondência correta", verifique CADA par individualmente
-6. Desconfie de alternativas com palavras como "apenas", "somente", "sempre", "nunca"
-7. Prefira a alternativa MAIS PRECISA e TECNICAMENTE CORRETA
-8. Em questões de equivalência/correspondência, a resposta é sempre a que tem TODOS os pares corretos
+3. Desconfie de "apenas", "somente", "sempre", "nunca"
+4. Prefira alternativas MAIS COMPLETAS e TECNICAMENTE PRECISAS
+5. Em correspondências, verifique CADA par individualmente
+6. Responda TODAS as ${qs.length} questões
 
-Responda TODAS as ${qs.length} questões. APENAS JSON puro:
-{"respostas":[{"questao":1,"letra":"A"},{"questao":2,"letra":"B"}]}
+APENAS JSON: {"respostas":[{"questao":1,"letra":"A"},{"questao":2,"letra":"B"}]}
 
 `;
-qs.forEach(q=>{prompt+=`Q${q.n}: ${q.e}\n`;q.alts.forEach(a=>{prompt+=`${a.l}) ${a.t}\n`;});prompt+='\n';});
+qs.forEach(q=>{p1+=`Q${q.n}: ${q.e}\n`;q.alts.forEach(a=>{p1+=`${a.l}) ${a.t}\n`;});p1+='\n';});
 
-// 3. CHAMAR APIs
-async function chamarDeepSeek(){
-try{
-console.log('%c📡 Consultando DeepSeek...','color:#aaa;font-size:11px');
-const r=await fetch('https://api.deepseek.com/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+DK},body:JSON.stringify({model:'deepseek-chat',messages:[{role:'user',content:prompt}],temperature:0.1,max_tokens:1000})});
-if(!r.ok)throw new Error(r.status);
-const d=await r.json();const t=d.choices[0].message.content.trim();const m=t.match(/\{[\s\S]*\}/);
-return m?JSON.parse(m[0]):null;
-}catch(e){console.log(`%c⚠️ DeepSeek falhou: ${e.message}`,'color:#ff8800;font-size:11px');return null;}
-}
+console.log('%c📡 Rodada 1: Respondendo...','color:#aaa;font-size:11px');
+const r1=await ask(p1,0.1);
 
-async function chamarGroq(){
-try{
-console.log('%c📡 Consultando Groq...','color:#aaa;font-size:11px');
-const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK},body:JSON.stringify({model:'meta-llama/llama-4-scout-17b-16e-instruct',messages:[{role:'user',content:prompt}],temperature:0.1,max_tokens:1000})});
-if(!r.ok)throw new Error(r.status);
-const d=await r.json();const t=d.choices[0].message.content.trim();const m=t.match(/\{[\s\S]*\}/);
-return m?JSON.parse(m[0]):null;
-}catch(e){console.log(`%c⚠️ Groq falhou: ${e.message}`,'color:#ff8800;font-size:11px');return null;}
-}
+// 4. RODADA 2 (prompt diferente, revisão)
+await new Promise(r=>setTimeout(r,2000));
+let p2=`Você é um revisor de provas especialista em encontrar ERROS. Revise estas questões com olhar CRÍTICO.
 
-// 4. CONSULTAR AMBAS
-const [r1,r2]=await Promise.all([chamarDeepSeek(),chamarGroq()]);
+ATENÇÃO ESPECIAL:
+- Se uma alternativa parece "óbvia demais", desconfie
+- Verifique se termos técnicos estão usados corretamente
+- "Row" = Linha (NÃO coluna), "Column" = Coluna (NÃO linha)
+- "Table" em NoSQL pode equivaler a "Column Family" ou "Tabela"
+- Cuidado com inversões de conceitos
 
-// 5. COMPARAR E DECIDIR
+APENAS JSON: {"respostas":[{"questao":1,"letra":"A"},{"questao":2,"letra":"B"}]}
+
+`;
+qs.forEach(q=>{p2+=`Q${q.n}: ${q.e}\n`;q.alts.forEach(a=>{p2+=`${a.l}) ${a.t}\n`;});p2+='\n';});
+
+console.log('%c📡 Rodada 2: Revisando...','color:#aaa;font-size:11px');
+const r2=await ask(p2,0.2);
+
+// 5. COMPARAR
 const final=[];
 let concordam=0,divergem=0;
-
 qs.forEach(q=>{
 const a1=r1?.respostas?.find(r=>r.questao===q.n);
 const a2=r2?.respostas?.find(r=>r.questao===q.n);
-
 if(a1&&a2&&a1.letra===a2.letra){
-  final.push({q:q.n,l:a1.letra,c:'✅',conf:'100%'});concordam++;
+  final.push({q:q.n,l:a1.letra,c:'✅'});concordam++;
 }else if(a1&&a2){
-  // Divergência - prefere DeepSeek (mais preciso)
-  final.push({q:q.n,l:a1.letra,c:'⚠️',conf:'70%',alt:a2.letra});divergem++;
-  console.log(`%c⚠️ Q${q.n}: DeepSeek=${a1.letra} vs Groq=${a2.letra} → usando DeepSeek`,'color:#ff8800;font-size:11px');
-}else if(a1){
-  final.push({q:q.n,l:a1.letra,c:'✅',conf:'85%'});concordam++;
-}else if(a2){
-  final.push({q:q.n,l:a2.letra,c:'✅',conf:'85%'});concordam++;
-}else{
-  final.push({q:q.n,l:'A',c:'❓',conf:'0%'});
-}
+  final.push({q:q.n,l:a2.letra,c:'⚠️'});divergem++;
+  console.log(`%c⚠️ Q${q.n}: R1=${a1.letra} vs R2=${a2.letra} → usando R2 (revisão)`,'color:#ff8800;font-size:11px');
+}else if(a1){final.push({q:q.n,l:a1.letra,c:'✅'});concordam++;}
+else if(a2){final.push({q:q.n,l:a2.letra,c:'✅'});concordam++;}
+else{final.push({q:q.n,l:'A',c:'❓'});}
 });
+console.log(`%c📊 ${concordam} concordam ✅ | ${divergem} divergem ⚠️`,'color:#00ff88;font-size:13px');
 
-console.log(`%c📊 Resultado: ${concordam} concordam ✅ | ${divergem} divergem ⚠️`,'color:#00ff88;font-size:13px');
-
-// 6. DESEMPATE (se houver divergências, consulta DeepSeek novamente com prompt diferente)
+// 6. DESEMPATE
 if(divergem>0){
-console.log('%c🎯 Rodando desempate para divergências...','color:#ffaa00;font-size:12px');
+await new Promise(r=>setTimeout(r,2000));
+console.log('%c🎯 Rodada 3: Desempate...','color:#ffaa00;font-size:12px');
 const divQs=qs.filter(q=>final.find(f=>f.q===q.n&&f.c==='⚠️'));
-let p2=`Revise com MÁXIMO cuidado. Cuidado com "apenas","somente","nunca","sempre". Prefira alternativas mais completas e tecnicamente precisas. APENAS JSON:\n{"respostas":[{"questao":1,"letra":"A"}]}\n\n`;
-divQs.forEach(q=>{p2+=`Q${q.n}: ${q.e}\n`;q.alts.forEach(a=>{p2+=`${a.l}) ${a.t}\n`;});p2+='\n';});
+let p3=`DESEMPATE. Analise com máxima precisão. Última chance de acertar. APENAS JSON:\n{"respostas":[{"questao":1,"letra":"A"}]}\n\n`;
+divQs.forEach(q=>{p3+=`Q${q.n}: ${q.e}\n`;q.alts.forEach(a=>{p3+=`${a.l}) ${a.t}\n`;});p3+='\n';});
 try{
-const r3=await fetch('https://api.deepseek.com/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+DK},body:JSON.stringify({model:'deepseek-chat',messages:[{role:'user',content:p2}],temperature:0.2,max_tokens:800})});
-if(r3.ok){
-const d=await r3.json();const t=d.choices[0].message.content.trim();const m=t.match(/\{[\s\S]*\}/);
-if(m){const res=JSON.parse(m[0]);
-res.respostas?.forEach(r=>{const idx=final.findIndex(f=>f.q===r.questao);if(idx!==-1){final[idx].l=r.letra;final[idx].c='🎯';final[idx].conf='90%';}});
-}}
+const r3=await ask(p3,0.15);
+r3?.respostas?.forEach(r=>{const idx=final.findIndex(f=>f.q===r.questao);if(idx!==-1){final[idx].l=r.letra;final[idx].c='🎯';}});
 }catch(e){}
 }
 
-// 7. MARCAR RESPOSTAS
-console.log('%c🖱️ Marcando respostas...','color:#ffaa00');
+// 7. MARCAR
+console.log('%c🖱️ Marcando...','color:#ffaa00');
 for(const f of final){
 const q=qs.find(x=>x.n===f.q);if(!q)continue;
 const alt=q.alts.find(a=>a.l===f.l);
 if(alt&&alt.b){await new Promise(r=>setTimeout(r,2000));alt.b.click();
-console.log(`%c${f.c} Q${f.q}: ${f.l} (${f.conf})`,'color:#00ff88;font-size:13px');}
+console.log(`%c${f.c} Q${f.q}: ${f.l}`,'color:#00ff88;font-size:13px');}
 }
-
-// 8. RESULTADO NO CONSOLE APENAS
 console.log('%c✅ Pronto! Todas marcadas.','color:#00ff88;font-size:14px;font-weight:bold');
-console.table(final.map(f=>({Q:f.q,Resp:f.l,Status:f.c,Conf:f.conf})));
+console.table(final.map(f=>({Q:f.q,Resp:f.l,Status:f.c})));
 })();
