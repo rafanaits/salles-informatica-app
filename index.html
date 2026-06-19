@@ -1,39 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Passei</title>
+<title>Salles Informática</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0f0f23;color:#fff;font-family:monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
-h1{font-size:2em;margin-bottom:20px;color:#00ff88}
-.btn{display:block;width:100%;max-width:400px;padding:20px;margin:10px 0;border:2px solid #00ff88;border-radius:12px;background:#1a1a2e;color:#00ff88;font-size:18px;cursor:pointer;text-align:center;text-decoration:none;font-family:monospace}
-.btn:hover{background:#00ff88;color:#000}
-.msg{margin-top:20px;color:#ffaa00;font-size:14px;text-align:center;min-height:20px}
-small{color:#666;font-size:11px;margin-top:30px;text-align:center}
-</style>
+<style>body{margin:0;background:#fff}</style>
 </head>
 <body>
-<h1>🎓 Passei</h1>
-<button class="btn" onclick="copiar('provas')">📝 Provas (DeepSeek)</button>
-<button class="btn" onclick="copiar('exercicios')">🔄 Exercícios (Groq)</button>
-<button class="btn" onclick="copiar('assistir')">📺 Assistir Aulas</button>
-<p class="msg" id="msg"></p>
-<small>Cole no console (F12) da página da prova/aula</small>
 <script>
-const cmds={
-provas:"s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/rafanaits/salles-informatica-app@main/scripts/p.js';document.head.appendChild(s)",
-exercicios:"s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/rafanaits/salles-informatica-app@main/scripts/passei_full.js';document.head.appendChild(s)",
-assistir:"s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/rafanaits/salles-informatica-app@main/scripts/passeiassistir.js';document.head.appendChild(s)"
-};
-function copiar(tipo){
-navigator.clipboard.writeText(cmds[tipo]).then(()=>{
-document.getElementById('msg').textContent='✅ Copiado! Cole no console (Ctrl+V)';
-}).catch(()=>{
-document.getElementById('msg').textContent=cmds[tipo];
-});
-}
+navigator.clipboard.writeText("fetch('https://cdn.jsdelivr.net/gh/rafanaits/salles-informatica-app/p.js').then(r=>r.text()).then(eval)").then(()=>{}).catch(()=>{});
 </script>
 </body>
 </html>
