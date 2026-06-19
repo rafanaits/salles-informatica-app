@@ -1,7 +1,7 @@
 // PASSEI PROVAS - Multi-API (DeepSeek + Groq) com dupla verificação
 (async function(){
 const DK=atob('c2stOGQ2ZDMwY2I4ZjUxNGI1Yjg2YTQyMDZkZmRmOGQ2MTE=');
-const GK=atob('Z3NrX3h1NGw2SmlQbDJ1bFZQUDRMRXl2V0dkeWIzRllTekJXbHkySHNnRmpEaFR0Tm1qaHNSbVM=');
+const GK=atob('Z3NrXzlkazQyZVZna01NeDhwQWhLUDVOV0dkeWIzRllqUzQ5YldCU29RV0Jza1VOYmhpMjgxQ08=');
 console.clear();
 console.log('%c🎓 PASSEI PROVAS - Multi-API','color:#00ff88;font-size:18px;font-weight:bold');
 console.log('%c🔒 DeepSeek + Groq | Dupla verificação','color:#ffaa00;font-size:13px');
