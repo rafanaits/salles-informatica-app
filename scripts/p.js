@@ -116,12 +116,7 @@ if(alt&&alt.b){await new Promise(r=>setTimeout(r,2000));alt.b.click();
 console.log(`%c${f.c} Q${f.q}: ${f.l} (${f.conf})`,'color:#00ff88;font-size:13px');}
 }
 
-// 8. PAINEL
-const panel=document.createElement('div');
-panel.style.cssText='position:fixed;top:10px;right:10px;background:rgba(0,0,0,.95);color:#0f8;font:13px monospace;padding:15px;border-radius:10px;z-index:99999;border:2px solid #0f8;max-height:90vh;overflow-y:auto';
-panel.innerHTML=`<b>🎓 PASSEI PROVAS</b><br><small style="color:#888">DeepSeek + Groq</small><br><br>`+
-final.map(f=>`Q${f.q}: <b>${f.l}</b> ${f.c} ${f.conf}`).join('<br>')+
-`<br><br><small style="color:#888">✅=ambas concordam | 🎯=desempate | ⚠️=divergência</small><br><small style="color:#666">Clique pra fechar</small>`;
-panel.onclick=()=>panel.remove();document.body.appendChild(panel);
-console.log('%c✅ Pronto! Verifique e finalize.','color:#00ff88;font-size:14px;font-weight:bold');
+// 8. RESULTADO NO CONSOLE APENAS
+console.log('%c✅ Pronto! Todas marcadas.','color:#00ff88;font-size:14px;font-weight:bold');
+console.table(final.map(f=>({Q:f.q,Resp:f.l,Status:f.c,Conf:f.conf})));
 })();
